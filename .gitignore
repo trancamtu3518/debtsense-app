@@ -1,0 +1,38 @@
+# OSX
+#
+# .DS_Store
+# Thumbs.db
+
+# Node.js
+#
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Expo
+#
+.expo/
+.expo-shared/
+web-build/
+dist/
+
+# IDE
+#
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Environment variables
+#
+.env
+.env.local
+.env.*.local
+
+# Build files
+#
+*.exe
+*.dll
+*.so
+*.dylib

@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "DebtSense",
+    "slug": "debtsense",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#1A6B5A"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#1A6B5A"
+      }
+    }
+  }
+}

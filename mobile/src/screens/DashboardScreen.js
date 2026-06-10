@@ -55,73 +55,7 @@ function getTodayGreeting() {
   return 'Chào buổi tối';
 }
 
-function TabBar({ active, onNavigate }) {
-  const tabs = [
-    { key: 'home', icon: '🏠', label: 'Trang chủ' },
-    { key: 'debt', icon: '📊', label: 'Khoản nợ' },
-    { key: 'checkin', icon: '🎙️', label: 'Check-in' },
-    { key: 'badge', icon: '🏅', label: 'Huy hiệu' },
-  ];
 
-  const renderTab = (tab) => {
-    const isActive = active === tab.key;
-
-    return (
-      <TouchableOpacity
-        key={tab.key}
-        style={[tabStyles.tab, isActive && tabStyles.tabActive]}
-        onPress={() => onNavigate(tab.key)}
-        activeOpacity={0.9}
-      >
-        <Text style={[tabStyles.icon, isActive && tabStyles.iconActive]}>{tab.icon}</Text>
-        <Text style={[tabStyles.label, isActive && tabStyles.labelActive]}>
-          {tab.label}
-        </Text>
-      </TouchableOpacity>
-    );
-  };
-
-  return (
-    <View style={tabStyles.bar}>
-      {tabs.map(renderTab)}
-    </View>
-  );
-}
-
-const tabStyles = StyleSheet.create({
-  bar: {
-    flexDirection: 'row',
-    backgroundColor: Colors.surface,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
-    paddingBottom: 28,
-    paddingTop: 10,
-  },
-  tab: { 
-    flex: 1, 
-    alignItems: 'center', 
-    gap: 3,
-    paddingVertical: 4,
-    borderRadius: 16,
-    marginHorizontal: 6,
-  },
-  tabActive: {
-    backgroundColor: Colors.teal50,
-  },
-  icon: { fontSize: 22 },
-  iconActive: {
-    fontSize: 24,
-  },
-  label: {
-    fontFamily: 'BeVietnamPro-Regular',
-    fontSize: 11,
-    color: Colors.inkLight,
-  },
-  labelActive: {
-    fontFamily: 'BeVietnamPro-SemiBold',
-    color: Colors.teal700,
-  },
-});
 
 function AvoiderDashboard({ user, debtSummary, navigation }) {
   const [mood, setMood] = useState(null);
@@ -207,6 +141,54 @@ function AvoiderDashboard({ user, debtSummary, navigation }) {
           </Text>
         </View>
       )}
+
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => navigation.navigate('DebtReframe')}
+      >
+        <Text style={styles.cardTitle}>
+          💡 Debt Reframe
+        </Text>
+        <Text style={styles.cardSubtitle}>
+          Xem khoản nợ theo cách dễ chịu hơn
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => navigation.navigate('Achievements')}
+      >
+        <Text style={styles.cardTitle}>
+          🏆 Thành tích
+        </Text>
+        <Text style={styles.cardSubtitle}>
+          Xem streak và huy hiệu
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => navigation.navigate('ActionPlan')}
+      >
+        <Text style={styles.cardTitle}>
+          🎯 Kế hoạch 7 ngày
+        </Text>
+        <Text style={styles.cardSubtitle}>
+          Xem lộ trình cá nhân hóa
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => navigation.navigate('VoiceAssistant')}
+      >
+        <Text style={styles.cardTitle}>
+          🎤 Voice Assistant
+        </Text>
+        <Text style={styles.cardSubtitle}>
+          Trò chuyện bằng giọng nói
+        </Text>
+      </TouchableOpacity>
 
       <View style={styles.todoCard}>
         <Text style={styles.sectionTitle}>🎯 Hôm nay</Text>
@@ -331,6 +313,54 @@ function WorrierDashboard({ user, debtSummary, navigation }) {
         </View>
       )}
 
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => navigation.navigate('DebtReframe')}
+      >
+        <Text style={styles.cardTitle}>
+          💡 Debt Reframe
+        </Text>
+        <Text style={styles.cardSubtitle}>
+          Xem khoản nợ theo cách dễ chịu hơn
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => navigation.navigate('Achievements')}
+      >
+        <Text style={styles.cardTitle}>
+          🏆 Thành tích
+        </Text>
+        <Text style={styles.cardSubtitle}>
+          Xem streak và huy hiệu
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => navigation.navigate('ActionPlan')}
+      >
+        <Text style={styles.cardTitle}>
+          🎯 Kế hoạch 7 ngày
+        </Text>
+        <Text style={styles.cardSubtitle}>
+          Xem lộ trình cá nhân hóa
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => navigation.navigate('VoiceAssistant')}
+      >
+        <Text style={styles.cardTitle}>
+          🎤 Voice Assistant
+        </Text>
+        <Text style={styles.cardSubtitle}>
+          Trò chuyện bằng giọng nói
+        </Text>
+      </TouchableOpacity>
+
       <View style={styles.todoCard}>
         <Text style={styles.sectionTitle}>🎯 Hôm nay</Text>
         <Text style={styles.todoItemDone}>☑ Check-in cảm xúc</Text>
@@ -430,6 +460,54 @@ function OstrichDashboard({ user, debtSummary, navigation }) {
         </View>
       )}
 
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => navigation.navigate('DebtReframe')}
+      >
+        <Text style={styles.cardTitle}>
+          💡 Debt Reframe
+        </Text>
+        <Text style={styles.cardSubtitle}>
+          Xem khoản nợ theo cách dễ chịu hơn
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => navigation.navigate('Achievements')}
+      >
+        <Text style={styles.cardTitle}>
+          🏆 Thành tích
+        </Text>
+        <Text style={styles.cardSubtitle}>
+          Xem streak và huy hiệu
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => navigation.navigate('ActionPlan')}
+      >
+        <Text style={styles.cardTitle}>
+          🎯 Kế hoạch 7 ngày
+        </Text>
+        <Text style={styles.cardSubtitle}>
+          Xem lộ trình cá nhân hóa
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => navigation.navigate('VoiceAssistant')}
+      >
+        <Text style={styles.cardTitle}>
+          🎤 Voice Assistant
+        </Text>
+        <Text style={styles.cardSubtitle}>
+          Trò chuyện bằng giọng nói
+        </Text>
+      </TouchableOpacity>
+
       <View style={styles.todoCard}>
         <Text style={styles.sectionTitle}>🎯 Hôm nay</Text>
         <Text style={styles.todoItemDone}>☑ Check-in cảm xúc</Text>
@@ -473,7 +551,6 @@ function OstrichDashboard({ user, debtSummary, navigation }) {
 export default function DashboardScreen({ navigation }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('home');
 
   useEffect(() => {
     loadAllData().then(result => {
@@ -481,12 +558,6 @@ export default function DashboardScreen({ navigation }) {
       setLoading(false);
     });
   }, []);
-
-  const handleTabNav = (tab) => {
-    setActiveTab(tab);
-    if (tab === 'debt') navigation.navigate('DebtDetail');
-    if (tab === 'checkin') navigation.navigate('CheckIn');
-  };
 
   if (loading) {
     return (
@@ -524,8 +595,6 @@ export default function DashboardScreen({ navigation }) {
       {profileType === 'ostrich' && (
         <OstrichDashboard user={user} debtSummary={debtSummary} navigation={navigation} />
       )}
-
-      <TabBar active={activeTab} onNavigate={handleTabNav} />
     </View>
   );
 }
@@ -551,6 +620,7 @@ const styles = StyleSheet.create({
     ...Shadow.card,
   },
   cardTitle: { fontFamily: 'BeVietnamPro-SemiBold', fontSize: 17, color: Colors.ink, marginBottom: Spacing.md, lineHeight: 24 },
+  cardSubtitle: { fontFamily: 'BeVietnamPro-Regular', fontSize: 14, color: Colors.inkMid, lineHeight: 20 },
   cardLabel: { fontFamily: 'BeVietnamPro-SemiBold', fontSize: 13, color: Colors.teal700, marginBottom: 4 },
 
   moodRow: { flexDirection: 'row', gap: Spacing.sm, marginTop: Spacing.sm },

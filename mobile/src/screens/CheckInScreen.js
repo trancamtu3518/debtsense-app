@@ -1,10 +1,28 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors, Spacing, Radius, Shadow } from '../constants/theme';
 import { Button } from '../components';
 
 export default function CheckInScreen() {
   const [checked, setChecked] = useState(false);
+
+  const handleCheckIn = async () => {
+    const current = await AsyncStorage.getItem('streak');
+
+    const streak = current
+      ? parseInt(current)
+      : 0;
+
+    const newStreak = streak + 1;
+
+    await AsyncStorage.setItem(
+      'streak',
+      newStreak.toString()
+    );
+
+    setChecked(true);
+  };
 
   return (
     <View style={styles.container}>
@@ -21,7 +39,7 @@ export default function CheckInScreen() {
       <Button
         title={checked ? '✓ Đã check-in' : 'Check-in ngay'}
         variant={checked ? 'primary' : 'accent'}
-        onPress={() => setChecked(!checked)}
+        onPress={handleCheckIn}
       />
     </View>
   );

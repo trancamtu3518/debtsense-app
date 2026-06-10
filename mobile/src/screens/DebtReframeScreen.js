@@ -1,42 +1,109 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import useStore from '../store/useStore';
-import { Colors, Spacing, Radius, Shadow } from '../constants/theme';
-import { Card } from '../components';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 
-export default function DebtReframeScreen() {
-  const [reframeData, setReframeData] = useState(null);
-  const profile = useStore(state => state.profile);
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Colors, Spacing, Radius, Shadow } from '../constants/theme';
+
+function formatMoney(number) {
+  return number.toLocaleString('vi-VN') + 'đ';
+}
+
+export default function DebtReframeScreen({ navigation }) {
+  const [debt, setDebt] = useState(0);
 
   useEffect(() => {
-    setReframeData({
-      reframedText: '600.000đ/tháng = 4 ly cà phê/tuần → thoát nợ 50 tháng',
-      metaphor: 'Chặng đường marathon: bạn đang ở km số 5',
-      progressContext: 'Đã đi được 18% chặng đường',
-      weeklyEquivalent: 'Mỗi tuần chỉ cần để dành bằng 1 buổi ăn ngoài'
-    });
+    loadData();
   }, []);
 
-  if (!reframeData) return null;
+  const loadData = async () => {
+    const raw = await AsyncStorage.getItem('debtData');
+
+    if (!raw) return;
+
+    const data = JSON.parse(raw);
+
+    const total = data.debts.reduce(
+      (sum, item) => sum + item.total,
+      0
+    );
+
+    setDebt(total);
+  };
+
+  const monthly = Math.round(debt / 36);
+  const daily = Math.round(monthly / 30);
 
   return (
-    <ScrollView style={styles.container}>
-      <Card style={styles.card}>
-        <Text style={styles.title}>Thông tin của bạn</Text>
-        <Text style={styles.reframedText}>{reframeData.reframedText}</Text>
-      </Card>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{ padding: Spacing.lg, paddingBottom: 40 }}
+    >
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Text style={styles.back}>←</Text>
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Debt Reframe</Text>
+        <View style={{ width: 24 }} />
+      </View>
 
-      <Card style={styles.card}>
-        <Text style={styles.metaphor}>{reframeData.metaphor}</Text>
-      </Card>
+      <Text style={styles.title}>
+        💡 Debt Reframe
+      </Text>
 
-      <Card style={styles.card}>
-        <Text style={styles.progress}>{reframeData.progressContext}</Text>
-      </Card>
+      <Text style={styles.subtitle}>
+        Hãy nhìn khoản nợ theo một góc nhìn nhẹ nhàng hơn
+      </Text>
 
-      <Card style={styles.card}>
-        <Text style={styles.weekly}>{reframeData.weeklyEquivalent}</Text>
-      </Card>
+      <View style={styles.card}>
+        <Text style={styles.label}>
+          Tổng khoản nợ hiện tại
+        </Text>
+
+        <Text style={styles.bigNumber}>
+          {formatMoney(debt)}
+        </Text>
+      </View>
+
+      <View style={styles.aiCard}>
+        <Text style={styles.aiTitle}>
+          🤖 DebtSense AI
+        </Text>
+
+        <Text style={styles.aiText}>
+          Khoản nợ này tương đương khoảng:
+        </Text>
+
+        <Text style={styles.highlight}>
+          {formatMoney(monthly)}/tháng
+        </Text>
+
+        <Text style={styles.highlight}>
+          {formatMoney(daily)}/ngày
+        </Text>
+
+        <Text style={styles.message}>
+          Bạn không cần giải quyết toàn bộ khoản nợ hôm nay.
+        </Text>
+
+        <Text style={styles.message}>
+          Chỉ cần hoàn thành bước tiếp theo.
+        </Text>
+      </View>
+
+      <TouchableOpacity 
+        style={styles.button}
+        onPress={() => navigation.goBack()}
+      >
+        <Text style={styles.buttonText}>
+          Tôi đã hiểu 👍
+        </Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -44,39 +111,99 @@ export default function DebtReframeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: Spacing.lg,
-    backgroundColor: Colors.bg
+    backgroundColor: Colors.bg,
   },
-  card: {
-    marginBottom: Spacing.lg
+
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingTop: 60,
+    marginBottom: Spacing.lg,
   },
-  title: {
-    fontSize: 18,
-    fontFamily: 'BeVietnamPro-SemiBold',
-    color: Colors.teal700,
-    marginBottom: Spacing.md
-  },
-  reframedText: {
-    fontSize: 20,
+
+  back: {
+    fontSize: 24,
     color: Colors.ink,
-    fontFamily: 'BeVietnamPro-SemiBold'
   },
-  metaphor: {
+
+  headerTitle: {
     fontSize: 18,
     color: Colors.ink,
-    fontStyle: 'italic',
-    fontFamily: 'BeVietnamPro-Regular'
-  },
-  progress: {
-    fontSize: 22,
-    color: Colors.teal700,
     fontFamily: 'BeVietnamPro-Bold',
-    textAlign: 'center'
   },
-  weekly: {
-    fontSize: 18,
+
+  title: {
+    fontSize: 28,
+    fontFamily: 'BeVietnamPro-Bold',
+    color: Colors.teal900,
+  },
+
+  subtitle: {
+    marginTop: 8,
     color: Colors.inkMid,
-    textAlign: 'center',
-    fontFamily: 'BeVietnamPro-Regular'
-  }
+    marginBottom: 24,
+  },
+
+  card: {
+    backgroundColor: Colors.surface,
+    borderRadius: Radius.lg,
+    padding: Spacing.lg,
+    marginBottom: Spacing.lg,
+    ...Shadow.card,
+  },
+
+  label: {
+    color: Colors.inkLight,
+    marginBottom: 8,
+  },
+
+  bigNumber: {
+    fontSize: 32,
+    fontFamily: 'BeVietnamPro-Bold',
+    color: Colors.teal700,
+  },
+
+  aiCard: {
+    backgroundColor: Colors.teal50,
+    borderRadius: Radius.lg,
+    padding: Spacing.lg,
+  },
+
+  aiTitle: {
+    fontSize: 20,
+    fontFamily: 'BeVietnamPro-Bold',
+    marginBottom: 12,
+  },
+
+  aiText: {
+    marginBottom: 12,
+    color: Colors.ink,
+  },
+
+  highlight: {
+    fontSize: 24,
+    fontFamily: 'BeVietnamPro-Bold',
+    color: Colors.teal700,
+    marginBottom: 8,
+  },
+
+  message: {
+    marginTop: 12,
+    lineHeight: 22,
+    color: Colors.inkMid,
+  },
+
+  button: {
+    marginTop: 24,
+    backgroundColor: Colors.teal700,
+    borderRadius: Radius.pill,
+    paddingVertical: 16,
+    alignItems: 'center',
+  },
+
+  buttonText: {
+    color: '#fff',
+    fontFamily: 'BeVietnamPro-SemiBold',
+  },
 });

@@ -1,11 +1,13 @@
 import React from 'react';
-import { Text, Platform } from 'react-native';
+import { Text } from 'react-native';
+
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Colors } from '../constants/theme';
 
 import DashboardScreen from '../screens/DashboardScreen';
 import DebtDetailScreen from '../screens/DebtDetailScreen';
-import CheckInScreen from '../screens/CheckInScreen';
+import VoiceAssistantScreen from '../screens/VoiceAssistantScreen';
+import AICoachScreen from '../screens/AICoachScreen';
+import AchievementScreen from '../screens/AchievementScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
@@ -15,20 +17,11 @@ export default function MainTabs() {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: Colors.teal700,
-        tabBarInactiveTintColor: Colors.inkLight,
-        tabBarLabelStyle: {
-          fontFamily: 'BeVietnamPro-SemiBold',
-          fontSize: 12,
-          paddingBottom: Platform.OS === 'ios' ? 0 : 4,
-        },
+
         tabBarStyle: {
-          backgroundColor: Colors.surface,
-          borderTopWidth: 1,
-          borderTopColor: Colors.border,
-          height: Platform.OS === 'ios' ? 88 : 64,
-          paddingTop: 8,
-          paddingBottom: Platform.OS === 'ios' ? 30 : 8,
+          height: 70,
+          paddingBottom: 10,
+          paddingTop: 10,
         },
       }}
     >
@@ -36,32 +29,44 @@ export default function MainTabs() {
         name="Home"
         component={DashboardScreen}
         options={{
-          tabBarLabel: 'Home',
-          tabBarIcon: ({ focused }) => (
-            <Text style={{ fontSize: 22, opacity: focused ? 1 : 0.6 }}>🏠</Text>
-          ),
+          tabBarLabel: 'Trang chủ',
+          tabBarIcon: () => <Text>🏠</Text>,
         }}
       />
 
       <Tab.Screen
-        name="Debts"
+        name="Debt"
         component={DebtDetailScreen}
         options={{
           tabBarLabel: 'Nợ',
-          tabBarIcon: ({ focused }) => (
-            <Text style={{ fontSize: 22, opacity: focused ? 1 : 0.6 }}>💳</Text>
-          ),
+          tabBarIcon: () => <Text>💳</Text>,
         }}
       />
 
       <Tab.Screen
-        name="CheckInTab"
-        component={CheckInScreen}
+        name="Voice"
+        component={VoiceAssistantScreen}
         options={{
-          tabBarLabel: 'Check-in',
-          tabBarIcon: ({ focused }) => (
-            <Text style={{ fontSize: 22, opacity: focused ? 1 : 0.6 }}>🎤</Text>
-          ),
+          tabBarLabel: 'AI',
+          tabBarIcon: () => <Text>🎤</Text>,
+        }}
+      />
+
+      <Tab.Screen
+        name="Coach"
+        component={AICoachScreen}
+        options={{
+          tabBarLabel: 'Coach',
+          tabBarIcon: () => <Text>🤖</Text>,
+        }}
+      />
+
+      <Tab.Screen
+        name="Achievement"
+        component={AchievementScreen}
+        options={{
+          tabBarLabel: 'Thành tích',
+          tabBarIcon: () => <Text>🏆</Text>,
         }}
       />
 
@@ -69,10 +74,8 @@ export default function MainTabs() {
         name="Profile"
         component={ProfileScreen}
         options={{
-          tabBarLabel: 'Hồ sơ',
-          tabBarIcon: ({ focused }) => (
-            <Text style={{ fontSize: 22, opacity: focused ? 1 : 0.6 }}>👤</Text>
-          ),
+          tabBarLabel: 'Tôi',
+          tabBarIcon: () => <Text>👤</Text>,
         }}
       />
     </Tab.Navigator>

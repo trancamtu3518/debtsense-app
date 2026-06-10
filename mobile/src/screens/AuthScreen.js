@@ -90,9 +90,16 @@ export default function AuthScreen({ navigation }) {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.greeting}>Chào mừng bạn 👋</Text>
+          <Text style={styles.emoji}>
+            💜
+          </Text>
+
+          <Text style={styles.greeting}>
+            Chào mừng đến với DebtSense
+          </Text>
+
           <Text style={styles.subheading}>
-            Cho mình biết tên bạn để cuộc trò chuyện tự nhiên hơn nhé
+            Chúng tôi muốn hiểu bạn hơn để cá nhân hóa hành trình tài chính và giúp bạn giảm áp lực từng bước.
           </Text>
         </View>
 
@@ -201,5 +208,9 @@ const styles = StyleSheet.create({
     fontFamily: 'BeVietnamPro-SemiBold',
     fontSize: 16,
     color: '#fff',
+  },
+  emoji: {
+  fontSize: 42,
+  marginBottom: 16,
   },
 });

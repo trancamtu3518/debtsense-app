@@ -1,30 +1,72 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import {
-  View, Text, TextInput, TouchableOpacity,
-  Animated, StyleSheet, KeyboardAvoidingView,
-  Platform, ScrollView,
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  SafeAreaView,
 } from 'react-native';
+
 import { Colors, Spacing, Radius, Shadow } from '../constants/theme';
 
 const QUESTIONS = [
-  "Khi bạn nghĩ đến các khoản nợ hoặc chi phí sắp tới, cảm giác đầu tiên xuất hiện trong đầu bạn là gì?",
-  "Lần cuối cùng bạn chủ động kiểm tra số dư tài khoản là khi nào, và bạn cảm thấy thế nào sau đó?",
-  "Khi nhận được thông báo từ ngân hàng, phản ứng đầu tiên của bạn thường là gì?",
-  "Bạn thường làm gì khi cảm thấy lo lắng về tiền bạc — đối mặt ngay hay để qua hôm sau?",
-  "Nếu được thay đổi một điều về cách bạn quản lý tài chính ngay bây giờ, bạn muốn thay đổi điều gì?",
+  {
+    question: 'Bạn cảm thấy thế nào khi nghĩ về các khoản nợ?',
+    options: [
+      'Tôi rất lo lắng',
+      'Tôi thường tránh nghĩ đến',
+      'Tôi không quan tâm lắm',
+      'Tôi thấy bình thường',
+    ],
+  },
+  {
+    question: 'Bạn kiểm tra tài chính cá nhân bao lâu một lần?',
+    options: [
+      'Mỗi ngày',
+      'Mỗi tuần',
+      'Thỉnh thoảng',
+      'Gần như không bao giờ',
+    ],
+  },
+  {
+    question: 'Khi có hóa đơn mới bạn thường?',
+    options: [
+      'Kiểm tra ngay',
+      'Lo lắng nhiều',
+      'Để sau',
+      'Quên luôn',
+    ],
+  },
+  {
+    question: 'Bạn có kế hoạch trả nợ rõ ràng không?',
+    options: [
+      'Rất rõ ràng',
+      'Có nhưng chưa đều',
+      'Mơ hồ',
+      'Chưa có',
+    ],
+  },
+  {
+    question: 'Điều gì mô tả bạn đúng nhất?',
+    options: [
+      'Tôi lo lắng quá mức',
+      'Tôi thường né tránh',
+      'Tôi thiếu động lực',
+      'Tôi khá ổn',
+    ],
+  },
 ];
 
-// Segment progress bar
 function ProgressBar({ current, total }) {
   return (
-    <View style={{ flexDirection: 'row', gap: 6 }}>
-      {Array.from({ length: total }).map((_, i) => (
+    <View style={styles.progressContainer}>
+      {Array.from({ length: total }).map((_, index) => (
         <View
-          key={i}
-          style={{
-            flex: 1, height: 4, borderRadius: 2,
-            backgroundColor: i < current ? Colors.teal700 : Colors.border,
-          }}
+          key={index}
+          style={[
+            styles.progressItem,
+            index < current && styles.progressActive,
+          ]}
         />
       ))}
     </View>
@@ -33,218 +75,244 @@ function ProgressBar({ current, total }) {
 
 export default function AnxietyScanScreen({ navigation }) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [answers, setAnswers] = useState(Array(5).fill(''));
-  const slideAnim = useRef(new Animated.Value(0)).current;
+  const [answers, setAnswers] = useState(Array(QUESTIONS.length).fill(null));
 
-  const currentAnswer = answers[currentIndex];
-  const isAnswered = currentAnswer.trim().length >= 5;
-  const isLast = currentIndex === QUESTIONS.length - 1;
+  const currentQuestion = QUESTIONS[currentIndex];
+  const selected = answers[currentIndex];
 
-  const animateToNext = (callback) => {
-    Animated.sequence([
-      Animated.timing(slideAnim, { toValue: -30, duration: 200, useNativeDriver: true }),
-      Animated.timing(slideAnim, { toValue: 30, duration: 0, useNativeDriver: true }),
-    ]).start(() => {
-      callback();
-      Animated.timing(slideAnim, { toValue: 0, duration: 250, useNativeDriver: true }).start();
-    });
+  const selectAnswer = (option) => {
+    const updated = [...answers];
+    updated[currentIndex] = option;
+    setAnswers(updated);
   };
 
   const handleNext = () => {
-    if (isLast) {
-      navigation.navigate('ScanResult', { answers });
-    } else {
-      animateToNext(() => setCurrentIndex(i => i + 1));
+    if (currentIndex === QUESTIONS.length - 1) {
+      navigation.navigate('ScanResult', {
+        answers,
+      });
+      return;
     }
+
+    setCurrentIndex(currentIndex + 1);
   };
 
   const handleBack = () => {
     if (currentIndex === 0) {
       navigation.goBack();
-    } else {
-      animateToNext(() => setCurrentIndex(i => i - 1));
+      return;
     }
-  };
 
-  const updateAnswer = (text) => {
-    const newAnswers = [...answers];
-    newAnswers[currentIndex] = text;
-    setAnswers(newAnswers);
+    setCurrentIndex(currentIndex - 1);
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: Colors.bg }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      {/* Header */}
+    <SafeAreaView style={styles.container}>
+
       <View style={styles.header}>
-        <TouchableOpacity onPress={handleBack} style={styles.backBtn}>
-          <Text style={styles.backIcon}>←</Text>
+        <TouchableOpacity onPress={handleBack}>
+          <Text style={styles.back}>←</Text>
         </TouchableOpacity>
-        <View style={{ flex: 1, marginLeft: Spacing.md }}>
-          <Text style={styles.stepLabel}>Đánh Giá Cảm Xúc</Text>
-          <View style={{ marginTop: 8 }}>
-            <ProgressBar current={currentIndex + 1} total={5} />
-          </View>
+
+        <View style={styles.headerCenter}>
+          <Text style={styles.headerTitle}>
+            Đánh Giá Tâm Lý Tài Chính
+          </Text>
+
+          <ProgressBar
+            current={currentIndex + 1}
+            total={QUESTIONS.length}
+          />
         </View>
-        <Text style={styles.stepCount}>{currentIndex + 1}/5</Text>
+
+        <Text style={styles.counter}>
+          {currentIndex + 1}/{QUESTIONS.length}
+        </Text>
       </View>
 
-      <ScrollView
-        contentContainerStyle={styles.scroll}
-        keyboardShouldPersistTaps="handled"
-      >
-        <Animated.View style={{
-          opacity: slideAnim.interpolate({
-            inputRange: [-30, 0, 30],
-            outputRange: [0, 1, 0],
-          }),
-          transform: [{ translateX: slideAnim }]
-        }}>
+      <View style={styles.content}>
 
-          {/* Emotion hint */}
-          <View style={styles.hintRow}>
-            <Text style={styles.hintIcon}>💬</Text>
-            <Text style={styles.hintText}>Không có câu trả lời đúng hay sai</Text>
-          </View>
+        <View style={styles.tipCard}>
+          <Text style={styles.tipText}>
+            💜 Không có câu trả lời đúng hay sai
+          </Text>
+        </View>
 
-          {/* Question card */}
-          <View style={styles.questionCard}>
-            <Text style={styles.questionText}>{QUESTIONS[currentIndex]}</Text>
-          </View>
+        <Text style={styles.question}>
+          {currentQuestion.question}
+        </Text>
 
-          {/* Answer input */}
-          <TextInput
-            style={styles.input}
-            value={currentAnswer}
-            onChangeText={updateAnswer}
-            placeholder="Viết câu trả lời của bạn ở đây..."
-            placeholderTextColor={Colors.inkLight}
-            multiline
-            numberOfLines={5}
-            textAlignVertical="top"
-          />
+        {currentQuestion.options.map((option) => {
+          const active = selected === option;
 
-          {/* Character nudge */}
-          {currentAnswer.length > 0 && currentAnswer.length < 5 && (
-            <Text style={styles.nudgeText}>Hãy chia sẻ thêm một chút nhé 🙂</Text>
-          )}
-        </Animated.View>
-      </ScrollView>
+          return (
+            <TouchableOpacity
+              key={option}
+              style={[
+                styles.option,
+                active && styles.optionActive,
+              ]}
+              onPress={() => selectAnswer(option)}
+            >
+              <Text
+                style={[
+                  styles.optionText,
+                  active && styles.optionTextActive,
+                ]}
+              >
+                {option}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
 
-      {/* Sticky bottom */}
       <View style={styles.bottomBar}>
         <TouchableOpacity
-          style={[styles.btn, !isAnswered && styles.btnDisabled]}
+          style={[
+            styles.button,
+            !selected && styles.buttonDisabled,
+          ]}
+          disabled={!selected}
           onPress={handleNext}
-          disabled={!isAnswered}
-          activeOpacity={0.85}
         >
-          <Text style={styles.btnText}>
-            {isLast ? 'Xem Kết Quả' : 'Câu Tiếp Theo →'}
+          <Text style={styles.buttonText}>
+            {currentIndex === QUESTIONS.length - 1
+              ? 'Xem Kết Quả'
+              : 'Tiếp tục'}
           </Text>
         </TouchableOpacity>
       </View>
-    </KeyboardAvoidingView>
+
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: Colors.bg,
+  },
+
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: Spacing.lg,
-    paddingTop: 56,
-    paddingBottom: Spacing.lg,
-    backgroundColor: Colors.bg,
+    paddingTop: 20,
+    paddingBottom: 20,
   },
-  backBtn: { padding: 4 },
-  backIcon: { fontSize: 22, color: Colors.ink },
-  stepLabel: {
+
+  back: {
+    fontSize: 24,
+    color: Colors.ink,
+  },
+
+  headerCenter: {
+    flex: 1,
+    marginHorizontal: 16,
+  },
+
+  headerTitle: {
     fontFamily: 'BeVietnamPro-SemiBold',
     fontSize: 14,
     color: Colors.inkMid,
+    marginBottom: 10,
   },
-  stepCount: {
+
+  counter: {
     fontFamily: 'BeVietnamPro-Bold',
-    fontSize: 13,
     color: Colors.teal700,
   },
-  scroll: {
-    paddingHorizontal: Spacing.lg,
-    paddingBottom: 120,
-  },
-  hintRow: {
+
+  progressContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
     gap: 6,
-    marginBottom: Spacing.lg,
   },
-  hintIcon: { fontSize: 16 },
-  hintText: {
-    fontFamily: 'BeVietnamPro-Regular',
-    fontSize: 13,
-    color: Colors.inkLight,
-    fontStyle: 'italic',
+
+  progressItem: {
+    flex: 1,
+    height: 5,
+    borderRadius: 3,
+    backgroundColor: Colors.border,
   },
-  questionCard: {
+
+  progressActive: {
+    backgroundColor: Colors.teal700,
+  },
+
+  content: {
+    flex: 1,
+    paddingHorizontal: Spacing.lg,
+    paddingTop: 10,
+  },
+
+  tipCard: {
     backgroundColor: Colors.teal50,
-    borderRadius: Radius.lg,
-    padding: Spacing.lg,
-    borderLeftWidth: 4,
-    borderLeftColor: Colors.teal700,
-    marginBottom: Spacing.lg,
-  },
-  questionText: {
-    fontFamily: 'BeVietnamPro-SemiBold',
-    fontSize: 17,
-    color: Colors.ink,
-    lineHeight: 26,
-  },
-  input: {
-    backgroundColor: Colors.surface,
+    padding: 16,
     borderRadius: Radius.md,
-    borderWidth: 1.5,
-    borderColor: Colors.border,
-    padding: Spacing.md,
+    marginBottom: 24,
+  },
+
+  tipText: {
     fontFamily: 'BeVietnamPro-Regular',
+    color: Colors.inkMid,
+  },
+
+  question: {
+    fontFamily: 'BeVietnamPro-Bold',
+    fontSize: 22,
+    lineHeight: 32,
+    color: Colors.ink,
+    marginBottom: 24,
+  },
+
+  option: {
+    backgroundColor: '#fff',
+    borderWidth: 2,
+    borderColor: Colors.border,
+    borderRadius: Radius.lg,
+    padding: 18,
+    marginBottom: 14,
+  },
+
+  optionActive: {
+    borderColor: Colors.teal700,
+    backgroundColor: Colors.teal50,
+  },
+
+  optionText: {
+    fontFamily: 'BeVietnamPro-Medium',
     fontSize: 15,
     color: Colors.ink,
-    minHeight: 120,
-    lineHeight: 22,
   },
-  nudgeText: {
-    fontFamily: 'BeVietnamPro-Regular',
-    fontSize: 13,
-    color: Colors.teal500,
-    marginTop: Spacing.sm,
+
+  optionTextActive: {
+    color: Colors.teal700,
   },
+
   bottomBar: {
-    position: 'absolute',
-    bottom: 0, left: 0, right: 0,
-    backgroundColor: Colors.bg,
     paddingHorizontal: Spacing.lg,
     paddingBottom: 40,
     paddingTop: 12,
     borderTopWidth: 1,
     borderTopColor: Colors.border,
   },
-  btn: {
+
+  button: {
     backgroundColor: Colors.teal700,
-    borderRadius: Radius.pill,
     paddingVertical: 16,
+    borderRadius: Radius.pill,
     alignItems: 'center',
     ...Shadow.float,
   },
-  btnDisabled: {
+
+  buttonDisabled: {
     backgroundColor: Colors.border,
-    shadowOpacity: 0,
-    elevation: 0,
   },
-  btnText: {
+
+  buttonText: {
+    color: '#fff',
     fontFamily: 'BeVietnamPro-SemiBold',
     fontSize: 16,
-    color: '#fff',
   },
 });

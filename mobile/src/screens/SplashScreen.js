@@ -56,7 +56,7 @@ export default function SplashScreen({ navigation }) {
       <View style={styles.bottomSection}>
         <TouchableOpacity
           style={styles.btn}
-          onPress={() => navigation.navigate('Auth')}
+          onPress={() => navigation.navigate('Welcome')}
           activeOpacity={0.85}
         >
           <Text style={styles.btnText}>Bắt Đầu Hành Trình</Text>

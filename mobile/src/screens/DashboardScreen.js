@@ -22,12 +22,30 @@ async function loadAllData() {
 
 function calcDebtSummary(debt) {
   if (!debt?.debts?.length) return null;
+
   const debts = debt.debts;
+
   const totalDebt = debts.reduce((s, d) => s + (d.total || 0), 0);
+
   const totalMonthly = debts.reduce((s, d) => s + (d.monthly || 0), 0);
-  const monthsRemaining = totalMonthly > 0 ? Math.ceil(totalDebt / totalMonthly) : 0;
-  const percentPaid = 0;
-  return { totalDebt, totalMonthly, monthsRemaining, percentPaid, count: debts.length };
+
+  const monthsRemaining =
+    totalMonthly > 0
+      ? Math.ceil(totalDebt / totalMonthly)
+      : 0;
+
+  const percentPaid = Math.min(
+    Math.round((totalMonthly / totalDebt) * 100 * 6),
+    100
+  );
+
+  return {
+    totalDebt,
+    totalMonthly,
+    monthsRemaining,
+    percentPaid,
+    count: debts.length,
+  };
 }
 
 function getTodayGreeting() {
@@ -120,10 +138,20 @@ function AvoiderDashboard({ user, debtSummary, navigation }) {
           <Text style={styles.greetingSmall}>{getTodayGreeting()},</Text>
           <Text style={styles.greetingName}>{user?.name || 'bạn'} 👋</Text>
         </View>
-        <View style={styles.dateBadge}>
-          <Text style={styles.dateText}>
-            {new Date().toLocaleDateString('vi-VN', { weekday: 'short', day: 'numeric', month: 'numeric' })}
-          </Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <View style={styles.dateBadge}>
+            <Text style={styles.dateText}>
+              {new Date().toLocaleDateString('vi-VN', { weekday: 'short', day: 'numeric', month: 'numeric' })}
+            </Text>
+          </View>
+          <TouchableOpacity
+            style={styles.profileBtn}
+            onPress={() => navigation.navigate('Profile')}
+          >
+            <Text style={styles.profileBtnText}>
+              {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -178,10 +206,20 @@ function WorrierDashboard({ user, debtSummary, navigation }) {
           <Text style={styles.greetingSmall}>{getTodayGreeting()},</Text>
           <Text style={styles.greetingName}>{user?.name || 'bạn'} 👋</Text>
         </View>
-        <View style={styles.dateBadge}>
-          <Text style={styles.dateText}>
-            {new Date().toLocaleDateString('vi-VN', { weekday: 'short', day: 'numeric', month: 'numeric' })}
-          </Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <View style={styles.dateBadge}>
+            <Text style={styles.dateText}>
+              {new Date().toLocaleDateString('vi-VN', { weekday: 'short', day: 'numeric', month: 'numeric' })}
+            </Text>
+          </View>
+          <TouchableOpacity
+            style={styles.profileBtn}
+            onPress={() => navigation.navigate('Profile')}
+          >
+            <Text style={styles.profileBtnText}>
+              {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -207,6 +245,42 @@ function WorrierDashboard({ user, debtSummary, navigation }) {
         </Text>
       </View>
 
+      {debtSummary && (
+        <View style={styles.card}>
+          <Text style={styles.goalLabel}>
+            💡 Góc nhìn mới
+          </Text>
+
+          <Text
+            style={{
+              fontFamily: 'BeVietnamPro-Bold',
+              fontSize: 22,
+              color: Colors.ink,
+              lineHeight: 32,
+            }}
+          >
+            Bạn không cần giải quyết
+            {'\n'}
+            {debtSummary.totalDebt.toLocaleString('vi-VN')}đ
+            hôm nay.
+          </Text>
+
+          <Text
+            style={{
+              fontFamily: 'BeVietnamPro-Regular',
+              fontSize: 14,
+              color: Colors.inkMid,
+              marginTop: 10,
+              lineHeight: 22,
+            }}
+          >
+            Chỉ cần tập trung khoảng{' '}
+            {debtSummary.totalMonthly.toLocaleString('vi-VN')}đ
+            mỗi tháng.
+          </Text>
+        </View>
+      )}
+
       <View style={[styles.card, { borderColor: Colors.teal100 }]}>
         <Text style={styles.goalLabel}>🎯 Mục tiêu tuần này</Text>
         <Text style={styles.goalText}>
@@ -229,10 +303,20 @@ function OstrichDashboard({ user, debtSummary, navigation }) {
           <Text style={styles.greetingSmall}>{getTodayGreeting()},</Text>
           <Text style={styles.greetingName}>{user?.name || 'bạn'} 👋</Text>
         </View>
-        <View style={styles.dateBadge}>
-          <Text style={styles.dateText}>
-            {new Date().toLocaleDateString('vi-VN', { weekday: 'short', day: 'numeric', month: 'numeric' })}
-          </Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <View style={styles.dateBadge}>
+            <Text style={styles.dateText}>
+              {new Date().toLocaleDateString('vi-VN', { weekday: 'short', day: 'numeric', month: 'numeric' })}
+            </Text>
+          </View>
+          <TouchableOpacity
+            style={styles.profileBtn}
+            onPress={() => navigation.navigate('Profile')}
+          >
+            <Text style={styles.profileBtnText}>
+              {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -389,4 +473,13 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   debtBannerText: { fontFamily: 'BeVietnamPro-SemiBold', fontSize: 13, color: '#fff' },
+
+  profileBtn: {
+    width: 36, height: 36, borderRadius: 18,
+    backgroundColor: Colors.teal700,
+    justifyContent: 'center', alignItems: 'center',
+  },
+  profileBtnText: {
+    fontFamily: 'BeVietnamPro-Bold', fontSize: 15, color: '#fff',
+  },
 });

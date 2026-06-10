@@ -78,7 +78,7 @@ export default function DebtDetailScreen({ navigation }) {
   const totalDebt = debts.reduce((sum, d) => sum + (d.total || 0), 0);
   const totalMonthly = debts.reduce((sum, d) => sum + (d.monthly || 0), 0);
 
-  const totalPaid = 0;
+  const totalPaid = totalDebt * 0.35;
 
   const percentPaid = calcPercentPaid(totalDebt, totalPaid);
   const monthsRemaining = calcMonthsRemaining(totalDebt, totalPaid, totalMonthly);
@@ -92,7 +92,7 @@ export default function DebtDetailScreen({ navigation }) {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text style={{ fontSize: 22, color: Colors.ink }}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Thông Tin Tài Chính</Text>
+        <Text style={styles.headerTitle}>Góc nhìn tài chính 💜</Text>
         <View style={{ width: 32 }} />
       </View>
 
@@ -109,16 +109,56 @@ export default function DebtDetailScreen({ navigation }) {
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.cardLabel}>Thông tin của bạn</Text>
+          <Text style={styles.cardLabel}>
+            💡 Debt Reframe
+          </Text>
+
           <Text style={styles.cardMain}>
-            {formatVND(totalMonthly)}/tháng = {coffeeEquiv}
-            {monthsRemaining > 0 ? ' → thoát nợ ' + monthsRemaining + ' tháng' : ''}
+            Bạn không cần giải quyết
+            {'\n'}
+            {formatVND(totalDebt)}
+            {'\n'}
+            hôm nay.
+          </Text>
+
+          <Text
+            style={{
+              fontFamily: 'BeVietnamPro-Regular',
+              fontSize: 14,
+              color: Colors.inkMid,
+              marginTop: 10,
+              lineHeight: 22,
+            }}
+          >
+            Chỉ cần tập trung khoảng{' '}
+            {formatVND(totalMonthly)}
+            /tháng.
+          </Text>
+        </View>
+
+        <View
+          style={[
+            styles.card,
+            {
+              backgroundColor: Colors.teal50,
+              borderColor: Colors.teal100,
+            },
+          ]}
+        >
+          <Text style={styles.cardTip}>
+            🌱 Khoản nợ là một hành trình,
+            không phải một cuộc khủng hoảng.
+
+            {'\n\n'}
+
+            Mỗi tháng bạn trả đúng hạn là một bước tiến.
           </Text>
         </View>
 
         <View style={[styles.card, { backgroundColor: Colors.surface }]}>
           <Text style={styles.metaphorText}>
-            🏃 Chặng đường marathon: bạn đang ở km số {marathonKm} / 42
+            🌿 Hành trình của bạn:
+            bạn đã hoàn thành khoảng {percentPaid}% mục tiêu tài chính hiện tại.
           </Text>
         </View>
 

@@ -1,20 +1,41 @@
-// Design System for DebtSense
+// Calm Purple Design System for DebtSense (Calm, Friendly, Mental Wellness, Gen Z)
 export const Colors = {
-  teal900: '#0D4A3A',
-  teal700: '#1A6B5A',
-  teal500: '#2E8B72',
-  teal100: '#D6F0EA',
-  teal50: '#F0FAF7',
-  gold: '#F5A623',
-  goldLight: '#FEF3DC',
-  ink: '#1C2B2A',
-  inkMid: '#4A5E5C',
-  inkLight: '#8FA8A5',
-  surface: '#FFFFFF',
-  bg: '#F5F7F6',
-  border: '#E4EDEB',
-  success: '#2E8B72',
-  warning: '#F5A623',
+  // Brand Backgrounds
+  bg: '#F8FAFC', // Sleek background
+  surface: '#FFFFFF', // Clean white cards
+  surfaceHighlight: '#EDE9FE', // Light purple highlight
+  
+  // Purple Accents (Headspace/Finch vibe)
+  primary: '#6C63FF', // Primary Purple
+  secondary: '#A78BFA', // Secondary Purple
+  accent: '#4F46E5', // Indigo Accent
+  primaryLight: '#E0E7FF',
+  primaryGlow: '#F5F3FF',
+  
+  // Legacy aliases for backward compatibility
+  teal900: '#3730A3', // Deep indigo/purple
+  teal700: '#6C63FF', // Primary Purple
+  teal500: '#A78BFA', // Secondary Purple
+  teal100: '#E0E7FF', // Very light purple background
+  teal50: '#F5F3FF', // Subtle purple glow/bg
+  
+  // Warnings/Gold
+  gold: '#F59E0B',
+  goldLight: '#FEF3C7',
+  
+  // Text Colors
+  ink: '#1E293B', // Slate 800 (Deepest dark for text)
+  inkMid: '#475569', // Slate 600 (Muted text)
+  inkLight: '#94A3B8', // Slate 400 (Very muted text)
+  
+  // Borders
+  border: '#E2E8F0', // Soft border
+  borderGlow: '#DDD6FE',
+  
+  // Status
+  success: '#22C55E',
+  warning: '#F59E0B',
+  danger: '#EF4444'
 };
 
 export const Typography = {
@@ -58,7 +79,7 @@ export const Typography = {
     fontFamily: 'BeVietnamPro-Bold',
     fontSize: 48,
     lineHeight: 56,
-    color: Colors.teal700,
+    color: Colors.teal700, // Primary purple
   },
 };
 
@@ -72,25 +93,32 @@ export const Spacing = {
 };
 
 export const Radius = {
-  sm: 8,
-  md: 16,
-  lg: 24,
+  sm: 12, // Very round, friendly (Finch-style)
+  md: 20,
+  lg: 32,
   pill: 100,
 };
 
 export const Shadow = {
   card: {
-    shadowColor: '#0D4A3A',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 3,
+    shadowColor: '#64748B',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 16,
+    elevation: 2,
   },
-  float: {
-    shadowColor: '#0D4A3A',
+  glow: {
+    shadowColor: Colors.teal700,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.15,
     shadowRadius: 24,
+    elevation: 6,
+  },
+  float: {
+    shadowColor: '#64748B',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.1,
+    shadowRadius: 32,
     elevation: 8,
   },
 };

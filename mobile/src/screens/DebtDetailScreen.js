@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, ActivityIndicator, TextInput, Alert } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors, Spacing, Radius, Shadow } from '../constants/theme';
 import { AnimatedProgressBar } from '../components';
 
 function formatVND(amount) {
-  return amount.toLocaleString('vi-VN') + 'đ';
+  return (amount || 0).toLocaleString('vi-VN') + 'đ';
 }
 
 function calcMonthsRemaining(total, paid, monthly) {
@@ -32,10 +33,14 @@ function getMarathonKm(percentPaid) {
 export default function DebtDetailScreen({ navigation }) {
   const [debtData, setDebtData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activePaymentDebtId, setActivePaymentDebtId] = useState(null);
+  const [paymentAmount, setPaymentAmount] = useState('');
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+    }, [])
+  );
 
   const loadData = async () => {
     try {
@@ -47,6 +52,61 @@ export default function DebtDetailScreen({ navigation }) {
       console.error('Failed to load debt data', e);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleRecordPayment = async (debtId) => {
+    const rawAmount = paymentAmount.replace(/\D/g, '');
+    const amount = parseInt(rawAmount || '0', 10);
+    if (amount <= 0) {
+      Alert.alert('Thông báo', 'Vui lòng nhập số tiền thanh toán hợp lệ.');
+      return;
+    }
+
+    const currentDebt = debtData.debts.find(d => d.id === debtId);
+    if (!currentDebt) return;
+
+    const currentPaid = currentDebt.paid || 0;
+    const isCleared = currentPaid + amount >= currentDebt.total;
+
+    const updatedDebts = debtData.debts.map(d => {
+      if (d.id === debtId) {
+        return {
+          ...d,
+          paid: Math.min(currentPaid + amount, d.total)
+        };
+      }
+      return d;
+    });
+
+    const updatedData = {
+      ...debtData,
+      debts: updatedDebts,
+      savedAt: new Date().toISOString()
+    };
+
+    try {
+      await AsyncStorage.setItem('debtData', JSON.stringify(updatedData));
+
+      // Tick completed task for payment
+      const todayStr = new Date().toISOString().split('T')[0];
+      const completedTasksRaw = await AsyncStorage.getItem('completedTasks_' + todayStr);
+      let completed = completedTasksRaw ? JSON.parse(completedTasksRaw) : { checkin: false, review: false, payment: false };
+      completed.payment = true;
+      await AsyncStorage.setItem('completedTasks_' + todayStr, JSON.stringify(completed));
+
+      setDebtData(updatedData);
+      setActivePaymentDebtId(null);
+      setPaymentAmount('');
+
+      if (isCleared) {
+        Alert.alert('Chúc mừng! 🏆', `Bạn đã hoàn tất chi trả hoàn toàn khoản nợ "${currentDebt.name}"! Sự kiên trì của bạn thật đáng tự hào.`);
+      } else {
+        Alert.alert('Thành công! 🎉', `Đã ghi nhận thanh toán ${amount.toLocaleString('vi-VN')}đ cho "${currentDebt.name}".`);
+      }
+    } catch (e) {
+      console.error(e);
+      Alert.alert('Lỗi', 'Không thể ghi nhận khoản thanh toán.');
     }
   };
 
@@ -77,14 +137,11 @@ export default function DebtDetailScreen({ navigation }) {
   const debts = debtData.debts;
   const totalDebt = debts.reduce((sum, d) => sum + (d.total || 0), 0);
   const totalMonthly = debts.reduce((sum, d) => sum + (d.monthly || 0), 0);
-
-  const totalPaid = totalDebt * 0.35;
+  const totalPaid = debts.reduce((sum, d) => sum + (d.paid || 0), 0);
 
   const percentPaid = calcPercentPaid(totalDebt, totalPaid);
   const monthsRemaining = calcMonthsRemaining(totalDebt, totalPaid, totalMonthly);
-  const marathonKm = getMarathonKm(percentPaid);
   const coffeeEquiv = getCoffeeEquivalent(totalMonthly);
-  const progressWidth = Math.max(percentPaid, 3) + '%';
 
   return (
     <View style={{ flex: 1, backgroundColor: Colors.bg }}>
@@ -106,6 +163,9 @@ export default function DebtDetailScreen({ navigation }) {
               ? 'Bắt đầu hành trình từ hôm nay 🌱'
               : 'Đã đi được ' + percentPaid + '% chặng đường'}
           </Text>
+          <Text style={styles.heroPaidDetail}>
+            Đã trả: {formatVND(totalPaid)} / Tổng nợ: {formatVND(totalDebt)}
+          </Text>
         </View>
 
         <View style={styles.card}>
@@ -116,7 +176,7 @@ export default function DebtDetailScreen({ navigation }) {
           <Text style={styles.cardMain}>
             Bạn không cần giải quyết
             {'\n'}
-            {formatVND(totalDebt)}
+            {formatVND(totalDebt - totalPaid)}
             {'\n'}
             hôm nay.
           </Text>
@@ -146,49 +206,100 @@ export default function DebtDetailScreen({ navigation }) {
           ]}
         >
           <Text style={styles.cardTip}>
-            🌱 Khoản nợ là một hành trình,
-            không phải một cuộc khủng hoảng.
-
+            🌱 Khoản nợ là một hành trình, không phải một cuộc khủng hoảng.
             {'\n\n'}
-
-            Mỗi tháng bạn trả đúng hạn là một bước tiến.
-          </Text>
-        </View>
-
-        <View style={[styles.card, { backgroundColor: Colors.surface }]}>
-          <Text style={styles.metaphorText}>
-            🌿 Hành trình của bạn:
-            bạn đã hoàn thành khoảng {percentPaid}% mục tiêu tài chính hiện tại.
+            Mỗi tháng bạn trả đúng hạn là một bước tiến mới.
           </Text>
         </View>
 
         <View style={styles.card}>
           <Text style={styles.cardTip}>
-            💡 Mỗi tuần chỉ cần để dành bằng {coffeeEquiv.replace('/tuần', '')} là bạn đang đi đúng hướng
+            💡 Mỗi tuần chỉ cần để dành khoảng {coffeeEquiv.replace('/tuần', '')} là bạn đang đi đúng hướng
           </Text>
         </View>
 
-        {debts.length > 1 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Chi tiết từng khoản</Text>
-            {debts.map((debt, index) => (
-              <View key={debt.id || index} style={styles.debtRow}>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.debtName}>{debt.name || 'Khoản nợ ' + (index + 1)}</Text>
-                  {debt.type ? (
-                    <Text style={styles.debtType}>{debt.type}</Text>
-                  ) : null}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Danh sách khoản nợ</Text>
+          {debts.map((debt, index) => {
+            const isCleared = (debt.paid || 0) >= debt.total;
+            const singlePercent = calcPercentPaid(debt.total, debt.paid || 0);
+
+            return (
+              <View key={debt.id || index} style={[styles.debtRow, isCleared && styles.debtRowCleared]}>
+                <View style={styles.debtMainInfo}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={[styles.debtName, isCleared && styles.debtTextStrikethrough]}>
+                      {debt.name || 'Khoản nợ ' + (index + 1)}
+                    </Text>
+                    {debt.type ? (
+                      <Text style={styles.debtType}>{debt.type}</Text>
+                    ) : null}
+                  </View>
+                  <View style={{ alignItems: 'flex-end' }}>
+                    <Text style={styles.debtMonthly}>{formatVND(debt.monthly || 0)}/tháng</Text>
+                    <Text style={styles.debtMonths}>
+                      {isCleared ? 'Đã hoàn thành 🎉' : `Còn ~${calcMonthsRemaining(debt.total || 0, debt.paid || 0, debt.monthly || 1)} tháng`}
+                    </Text>
+                  </View>
                 </View>
-                <View style={{ alignItems: 'flex-end' }}>
-                  <Text style={styles.debtMonthly}>{formatVND(debt.monthly || 0)}/tháng</Text>
-                  <Text style={styles.debtMonths}>
-                    ~{calcMonthsRemaining(debt.total || 0, 0, debt.monthly || 1)} tháng
+
+                {/* Progress details for each debt */}
+                <View style={styles.singleDebtProgressSection}>
+                  <View style={styles.singleDebtProgressBarRow}>
+                    <AnimatedProgressBar progress={singlePercent} style={styles.singleProgressBar} color={isCleared ? Colors.success : Colors.teal700} />
+                    <Text style={styles.singleDebtProgressText}>{singlePercent}%</Text>
+                  </View>
+                  <Text style={styles.singleDebtProgressDetail}>
+                    Đã trả {formatVND(debt.paid || 0)} / {formatVND(debt.total)}
                   </Text>
                 </View>
+
+                {/* Inline payment form */}
+                {activePaymentDebtId === debt.id ? (
+                  <View style={styles.paymentForm}>
+                    <TextInput
+                      style={styles.paymentInput}
+                      placeholder="Nhập số tiền trả (đ)"
+                      keyboardType="numeric"
+                      value={paymentAmount}
+                      onChangeText={setPaymentAmount}
+                      autoFocus
+                    />
+                    <View style={styles.paymentBtnRow}>
+                      <TouchableOpacity
+                        style={[styles.paymentBtn, styles.paymentCancelBtn]}
+                        onPress={() => {
+                          setActivePaymentDebtId(null);
+                          setPaymentAmount('');
+                        }}
+                      >
+                        <Text style={styles.paymentCancelText}>Hủy</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[styles.paymentBtn, styles.paymentConfirmBtn]}
+                        onPress={() => handleRecordPayment(debt.id)}
+                      >
+                        <Text style={styles.paymentConfirmText}>Xác nhận</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ) : (
+                  !isCleared && (
+                    <TouchableOpacity
+                      style={styles.recordPaymentBtn}
+                      onPress={() => {
+                        setActivePaymentDebtId(debt.id);
+                        setPaymentAmount('');
+                      }}
+                    >
+                      <Text style={styles.recordPaymentBtnText}>💳 Ghi nhận thanh toán</Text>
+                    </TouchableOpacity>
+                  )
+                )}
               </View>
-            ))}
-          </View>
-        )}
+            );
+          })}
+        </View>
       </ScrollView>
     </View>
   );
@@ -205,7 +316,7 @@ const styles = StyleSheet.create({
 
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: Spacing.lg, paddingTop: 56, paddingBottom: Spacing.md,
+    paddingHorizontal: Spacing.lg, paddingTop: 72, paddingBottom: Spacing.md,
     backgroundColor: Colors.bg,
   },
   headerTitle: { fontFamily: 'BeVietnamPro-Bold', fontSize: 18, color: Colors.ink },
@@ -225,6 +336,7 @@ const styles = StyleSheet.create({
     marginVertical: Spacing.sm,
   },
   heroSubtext: { fontFamily: 'BeVietnamPro-SemiBold', fontSize: 14, color: Colors.teal700, textAlign: 'center' },
+  heroPaidDetail: { fontFamily: 'BeVietnamPro-Regular', fontSize: 12, color: Colors.inkMid, marginTop: 8 },
 
   card: {
     backgroundColor: Colors.surface,
@@ -241,15 +353,111 @@ const styles = StyleSheet.create({
 
   section: { marginTop: Spacing.sm },
   sectionTitle: { fontFamily: 'BeVietnamPro-Bold', fontSize: 15, color: Colors.ink, marginBottom: Spacing.md },
+  
   debtRow: {
-    flexDirection: 'row', alignItems: 'center',
     backgroundColor: Colors.surface,
-    borderRadius: Radius.md, padding: Spacing.md,
-    borderWidth: 1, borderColor: Colors.border,
+    borderRadius: Radius.md, 
+    padding: Spacing.md,
+    borderWidth: 1, 
+    borderColor: Colors.border,
     marginBottom: Spacing.sm,
+    ...Shadow.card,
+  },
+  debtRowCleared: {
+    borderColor: Colors.teal100,
+    backgroundColor: Colors.teal50,
+  },
+  debtMainInfo: {
+    flexDirection: 'row', 
+    alignItems: 'center',
   },
   debtName: { fontFamily: 'BeVietnamPro-SemiBold', fontSize: 14, color: Colors.ink },
+  debtTextStrikethrough: {
+    textDecorationLine: 'line-through',
+    color: Colors.inkLight,
+  },
   debtType: { fontFamily: 'BeVietnamPro-Regular', fontSize: 12, color: Colors.inkLight, marginTop: 2 },
   debtMonthly: { fontFamily: 'BeVietnamPro-Bold', fontSize: 14, color: Colors.teal700 },
   debtMonths: { fontFamily: 'BeVietnamPro-Regular', fontSize: 12, color: Colors.inkLight, marginTop: 2 },
+  
+  singleDebtProgressSection: {
+    marginTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+    paddingTop: 8,
+  },
+  singleDebtProgressBarRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  singleProgressBar: {
+    flex: 1,
+  },
+  singleDebtProgressText: {
+    fontFamily: 'BeVietnamPro-SemiBold',
+    fontSize: 12,
+    color: Colors.teal700,
+  },
+  singleDebtProgressDetail: {
+    fontFamily: 'BeVietnamPro-Regular',
+    fontSize: 11,
+    color: Colors.inkLight,
+    marginTop: 4,
+  },
+  recordPaymentBtn: {
+    marginTop: 12,
+    backgroundColor: Colors.teal50,
+    borderColor: Colors.teal100,
+    borderWidth: 1,
+    borderRadius: Radius.sm,
+    paddingVertical: 8,
+    alignItems: 'center',
+  },
+  recordPaymentBtnText: {
+    fontFamily: 'BeVietnamPro-SemiBold',
+    fontSize: 12,
+    color: Colors.teal700,
+  },
+  paymentForm: {
+    marginTop: 12,
+    padding: 8,
+    backgroundColor: Colors.bg,
+    borderRadius: Radius.sm,
+  },
+  paymentInput: {
+    fontFamily: 'BeVietnamPro-SemiBold',
+    fontSize: 14,
+    color: Colors.ink,
+    borderBottomWidth: 1.5,
+    borderBottomColor: Colors.teal700,
+    paddingBottom: 4,
+    marginBottom: 8,
+  },
+  paymentBtnRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 8,
+  },
+  paymentBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: Radius.sm,
+  },
+  paymentCancelBtn: {
+    backgroundColor: 'transparent',
+  },
+  paymentConfirmBtn: {
+    backgroundColor: Colors.teal700,
+  },
+  paymentCancelText: {
+    fontFamily: 'BeVietnamPro-Regular',
+    fontSize: 12,
+    color: Colors.inkLight,
+  },
+  paymentConfirmText: {
+    fontFamily: 'BeVietnamPro-SemiBold',
+    fontSize: 12,
+    color: '#fff',
+  },
 });

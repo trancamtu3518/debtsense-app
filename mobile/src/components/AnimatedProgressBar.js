@@ -2,6 +2,8 @@ import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet, Animated } from 'react-native';
 import { Colors, Radius } from '../constants/theme';
 
+import { LinearGradient } from 'expo-linear-gradient';
+
 const AnimatedProgressBar = ({ progress, style, color }) => {
   const animValue = useRef(new Animated.Value(0)).current;
 
@@ -21,7 +23,14 @@ const AnimatedProgressBar = ({ progress, style, color }) => {
   return (
     <View style={[styles.container, style]}>
       <View style={styles.background}>
-        <Animated.View style={[styles.fill, { width, backgroundColor: color || Colors.teal700 }]} />
+        <Animated.View style={[styles.fill, { width }]}>
+          <LinearGradient
+            colors={['#14B8A6', '#5EEAD4']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={StyleSheet.absoluteFill}
+          />
+        </Animated.View>
       </View>
     </View>
   );

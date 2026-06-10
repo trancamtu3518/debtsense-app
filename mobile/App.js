@@ -9,7 +9,6 @@ import AnxietyScanScreen from './src/screens/AnxietyScanScreen';
 import ScanResultScreen from './src/screens/ScanResultScreen';
 import DebtInputScreen from './src/screens/DebtInputScreen';
 import DashboardScreen from './src/screens/DashboardScreen';
-import ReframeScreen from './src/screens/ReframeScreen';
 import DebtReframeScreen from './src/screens/DebtReframeScreen';
 import AchievementScreen from './src/screens/AchievementScreen';
 import DebtDetailScreen from './src/screens/DebtDetailScreen';
@@ -17,6 +16,7 @@ import CheckInScreen from './src/screens/CheckInScreen';
 import VoiceAssistantScreen from './src/screens/VoiceAssistantScreen';
 import AICoachScreen from './src/screens/AICoachScreen';
 import ActionPlanScreen from './src/screens/ActionPlanScreen';
+import DailyLessonScreen from './src/screens/DailyLessonScreen';
 import MainTabs from './src/navigation/MainTabs';
 
 const Stack = createStackNavigator();
@@ -69,12 +69,6 @@ export default function App() {
         />
 
         <Stack.Screen
-          name="Reframe"
-          component={ReframeScreen}
-          options={{ headerShown: false }}
-        />
-
-        <Stack.Screen
           name="DebtReframe"
           component={DebtReframeScreen}
           options={{ headerShown: false }}
@@ -113,6 +107,12 @@ export default function App() {
         <Stack.Screen
           name="MainTabs"
           component={MainTabs}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="DailyLesson"
+          component={DailyLessonScreen}
           options={{ headerShown: false }}
         />
 

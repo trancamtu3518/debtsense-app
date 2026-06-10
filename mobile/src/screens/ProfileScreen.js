@@ -161,7 +161,7 @@ export default function ProfileScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: Spacing.lg,
-    paddingTop: 64,
+    paddingTop: 80,
     paddingBottom: 40,
     backgroundColor: Colors.bg,
     flexGrow: 1,

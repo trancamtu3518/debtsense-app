@@ -5,37 +5,88 @@ import { Colors, Spacing, Radius, Shadow } from '../constants/theme';
 
 // HARDCODE cho MVP — sau này thay bằng API call
 function mockAnalyzeProfile(answers) {
-  const combined = answers.join(' ').toLowerCase();
-  if (combined.includes('sợ') || combined.includes('né') || combined.includes('tránh')) return 'avoider';
-  if (combined.includes('lo') || combined.includes('liên tục') || combined.includes('kiểm tra')) return 'worrier';
+  let worrier = 0;
+  let avoider = 0;
+  let ostrich = 0;
+
+  answers.forEach(answer => {
+    if (!answer) return;
+
+    const text = answer.toLowerCase();
+
+    if (
+      text.includes('lo') ||
+      text.includes('kiểm tra') ||
+      text.includes('rất rõ ràng')
+    ) {
+      worrier++;
+    }
+
+    if (
+      text.includes('tránh') ||
+      text.includes('để sau') ||
+      text.includes('mơ hồ')
+    ) {
+      avoider++;
+    }
+
+    if (
+      text.includes('quên') ||
+      text.includes('không bao giờ') ||
+      text.includes('chưa có') ||
+      text.includes('thiếu động lực')
+    ) {
+      ostrich++;
+    }
+  });
+
+  const max = Math.max(worrier, avoider, ostrich);
+
+  if (max === worrier) return 'worrier';
+  if (max === avoider) return 'avoider';
+
   return 'ostrich';
 }
 
 const PROFILE_DATA = {
   avoider: {
-    emoji: '🌱',
+    emoji: '🙈',
     title: 'Người Né Tránh',
     subtitle: 'Avoider',
-    description: 'Bạn biết mình cần nhìn vào tài chính, nhưng cảm giác overwhelmed khiến bạn trì hoãn. Điều đó hoàn toàn bình thường.',
-    approach: 'DebtSense sẽ không ép bạn nhìn số. Mình sẽ hỏi cảm xúc trước, từng bước nhỏ thôi.',
+    description:
+      'Bạn có xu hướng tránh nhìn vào các khoản nợ vì chúng tạo cảm giác áp lực hoặc quá tải.',
+
+    approach:
+      'DebtSense sẽ chia nhỏ thông tin và giúp bạn tiếp cận tài chính theo từng bước đơn giản.',
+
     accentColor: Colors.teal700,
     bgColor: Colors.teal50,
   },
+
   worrier: {
-    emoji: '🌊',
+    emoji: '😟',
     title: 'Người Lo Lắng',
     subtitle: 'Worrier',
-    description: 'Bạn quan tâm đến tài chính — có lẽ hơi quá mức. Kiểm tra số dư nhiều lần nhưng vẫn thấy bất an.',
-    approach: 'DebtSense sẽ hiển thị tiến độ bằng % và cột mốc nhỏ — không bao giờ là con số tuyệt đối đáng sợ.',
+    description:
+      'Bạn suy nghĩ rất nhiều về tình hình tài chính và thường cảm thấy áp lực dù đã theo dõi sát sao.',
+
+    approach:
+      'DebtSense sẽ giúp bạn nhìn bức tranh tài chính rõ ràng hơn và giảm bớt lo lắng không cần thiết.',
+
     accentColor: Colors.gold,
     bgColor: Colors.goldLight,
   },
+
   ostrich: {
-    emoji: '🔥',
+    emoji: '🐦',
     title: 'Người Trì Hoãn',
     subtitle: 'Ostrich',
-    description: 'Bạn biết phải làm gì, chỉ là... chưa làm thôi. Thiếu động lực hơn là thiếu kiến thức.',
-    approach: 'DebtSense sẽ biến việc quản lý nợ thành game — streak, badge, và cảm giác chiến thắng mỗi tuần.',
+    description:
+      'Bạn biết mình cần quản lý tài chính nhưng thường thiếu động lực để duy trì đều đặn.',
+
+    approach:
+      'DebtSense sẽ sử dụng streak, huy hiệu và thử thách nhỏ để giúp bạn hình thành thói quen.',
+
     accentColor: Colors.teal900,
     bgColor: Colors.teal100,
   },
@@ -67,7 +118,7 @@ export default function ScanResultScreen({ route, navigation }) {
         Animated.timing(slideAnim, { toValue: 0, duration: 500, useNativeDriver: true }),
         Animated.timing(fadeAnim, { toValue: 1, duration: 500, useNativeDriver: true }),
       ]).start();
-    }, 3000);
+    }, 1500);
 
     return () => clearInterval(dotInterval);
   }, []);
@@ -77,9 +128,9 @@ export default function ScanResultScreen({ route, navigation }) {
       <View style={styles.loadingContainer}>
         <Text style={styles.loadingEmoji}>🧠</Text>
         <Text style={styles.loadingText}>
-          Đang phân tích cảm xúc của bạn{'.'.repeat(dotCount)}
+          Đang xây dựng hồ sơ tài chính của bạn{'.'.repeat(dotCount)}
         </Text>
-        <Text style={styles.loadingSubtext}>Mình đang lắng nghe từng từ bạn viết</Text>
+        <Text style={styles.loadingSubtext}>Chỉ mất vài giây để cá nhân hóa trải nghiệm</Text>
       </View>
     );
   }
@@ -115,10 +166,10 @@ export default function ScanResultScreen({ route, navigation }) {
           onPress={() => navigation.navigate('DebtInput')}
           activeOpacity={0.85}
         >
-          <Text style={styles.btnText}>Nhập Thông Tin Nợ →</Text>
+          <Text style={styles.btnText}>Tiếp tục →</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.replace('MainTabs')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Dashboard')}>
           <Text style={styles.skipText}>Bỏ qua, xem Dashboard trước</Text>
         </TouchableOpacity>
       </Animated.View>

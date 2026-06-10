@@ -125,6 +125,7 @@ const tabStyles = StyleSheet.create({
 
 function AvoiderDashboard({ user, debtSummary, navigation }) {
   const [mood, setMood] = useState(null);
+  const streak = 7;
   const moods = [
     { key: 'calm', emoji: '😌', label: 'Bình yên' },
     { key: 'okay', emoji: '😐', label: 'Bình thường' },
@@ -152,6 +153,14 @@ function AvoiderDashboard({ user, debtSummary, navigation }) {
               {user?.name?.charAt(0)?.toUpperCase() || 'U'}
             </Text>
           </TouchableOpacity>
+        </View>
+      </View>
+
+      <View style={styles.streakCard}>
+        <Text style={styles.streakEmoji}>🔥</Text>
+        <View>
+          <Text style={styles.streakTitle}>{streak} ngày liên tiếp</Text>
+          <Text style={styles.streakSubText}>Bạn đang duy trì thói quen rất tốt</Text>
         </View>
       </View>
 
@@ -183,13 +192,58 @@ function AvoiderDashboard({ user, debtSummary, navigation }) {
       )}
 
       {debtSummary && (
-        <View style={[styles.card, { backgroundColor: Colors.teal50, borderColor: Colors.teal100 }]}>
-          <Text style={styles.goalLabel}>🎯 Mục tiêu tuần này</Text>
-          <Text style={styles.goalText}>
-            Mở app và check-in 3 lần. Không cần làm gì thêm cả.
+        <View style={styles.card}>
+          <Text style={styles.goalLabel}>🌱 Debt Reframe</Text>
+          <Text
+            style={{
+              fontFamily: 'BeVietnamPro-Bold',
+              fontSize: 20,
+              color: Colors.ink,
+              lineHeight: 30,
+            }}
+          >
+            Chỉ khoảng{'\n'}
+            {debtSummary.totalMonthly.toLocaleString('vi-VN')}đ/tháng
           </Text>
         </View>
       )}
+
+      <View style={styles.todoCard}>
+        <Text style={styles.sectionTitle}>🎯 Hôm nay</Text>
+        <Text style={styles.todoItemDone}>☑ Check-in cảm xúc</Text>
+        <Text style={styles.todoItem}>☐ Xem lại khoản nợ</Text>
+        <Text style={styles.todoItem}>☐ Cập nhật thanh toán</Text>
+      </View>
+
+      <View style={styles.badgeCard}>
+        <Text style={styles.sectionTitle}>🏆 Thành tích</Text>
+        <Text style={styles.badgeItem}>🥉 Theo dõi đều đặn</Text>
+        <Text style={styles.badgeItem}>🥈 10 lần check-in</Text>
+      </View>
+
+      <View style={styles.quickActions}>
+        <Text style={styles.sectionTitle}>⚡ Hành động nhanh</Text>
+        <View style={styles.actionRow}>
+          <TouchableOpacity
+            style={styles.actionBtn}
+            onPress={() => navigation.navigate('DebtDetail')}
+          >
+            <Text style={styles.actionBtnText}>💳 Chi tiết nợ</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionBtn}
+            onPress={() => navigation.navigate('CheckIn')}
+          >
+            <Text style={styles.actionBtnText}>🎤 Check-in</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionBtn}
+            onPress={() => navigation.navigate('Profile')}
+          >
+            <Text style={styles.actionBtnText}>👤 Hồ sơ</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </ScrollView>
   );
 }
@@ -197,7 +251,7 @@ function AvoiderDashboard({ user, debtSummary, navigation }) {
 function WorrierDashboard({ user, debtSummary, navigation }) {
   const percent = debtSummary?.percentPaid ?? 0;
   const months = debtSummary?.monthsRemaining ?? 0;
-  const progressWidth = Math.max(percent, 3) + '%';
+  const streak = 7;
 
   return (
     <ScrollView contentContainerStyle={styles.scroll}>
@@ -220,6 +274,14 @@ function WorrierDashboard({ user, debtSummary, navigation }) {
               {user?.name?.charAt(0)?.toUpperCase() || 'U'}
             </Text>
           </TouchableOpacity>
+        </View>
+      </View>
+
+      <View style={styles.streakCard}>
+        <Text style={styles.streakEmoji}>🔥</Text>
+        <View>
+          <Text style={styles.streakTitle}>{streak} ngày liên tiếp</Text>
+          <Text style={styles.streakSubText}>Bạn đang duy trì thói quen rất tốt</Text>
         </View>
       </View>
 
@@ -228,73 +290,90 @@ function WorrierDashboard({ user, debtSummary, navigation }) {
         onPress={() => navigation.navigate('DebtDetail')}
         activeOpacity={0.85}
       >
-        <Text style={styles.cardLabel}>Tiến độ của bạn 👏</Text>
-        <Text style={styles.bigPercent}>{percent}%</Text>
+        <Text style={styles.cardLabel}>💳 Tổng nợ</Text>
+        {debtSummary && (
+          <Text style={styles.bigPercent}>
+            {debtSummary.totalDebt.toLocaleString('vi-VN')}đ
+          </Text>
+        )}
         <AnimatedProgressBar progress={percent} style={styles.progressBar} />
-        <Text style={styles.progressSub}>Đã thanh toán</Text>
+        <Text style={styles.progressSub}>Đã thanh toán {percent}%</Text>
         {months > 0 && (
           <Text style={styles.progressMonths}>Còn khoảng {months} tháng nữa</Text>
         )}
-        <Text style={styles.tapHint}>Nhấn để xem chi tiết →</Text>
       </TouchableOpacity>
-
-      <View style={styles.card}>
-        <Text style={styles.quoteEmoji}>💬</Text>
-        <Text style={styles.quoteText}>
-          "Mỗi tháng trả đúng hạn là một bước tiến. Bạn đang làm tốt hơn bạn nghĩ."
-        </Text>
-      </View>
 
       {debtSummary && (
         <View style={styles.card}>
-          <Text style={styles.goalLabel}>
-            💡 Góc nhìn mới
-          </Text>
-
+          <Text style={styles.goalLabel}>🌱 Debt Reframe</Text>
           <Text
             style={{
               fontFamily: 'BeVietnamPro-Bold',
-              fontSize: 22,
+              fontSize: 20,
               color: Colors.ink,
-              lineHeight: 32,
+              lineHeight: 30,
             }}
           >
-            Bạn không cần giải quyết
-            {'\n'}
-            {debtSummary.totalDebt.toLocaleString('vi-VN')}đ
-            hôm nay.
+            Chỉ khoảng{'\n'}
+            {debtSummary.totalMonthly.toLocaleString('vi-VN')}đ/tháng
           </Text>
-
           <Text
             style={{
               fontFamily: 'BeVietnamPro-Regular',
               fontSize: 14,
               color: Colors.inkMid,
-              marginTop: 10,
+              marginTop: 8,
               lineHeight: 22,
             }}
           >
-            Chỉ cần tập trung khoảng{' '}
-            {debtSummary.totalMonthly.toLocaleString('vi-VN')}đ
-            mỗi tháng.
+            Bạn không cần giải quyết {debtSummary.totalDebt.toLocaleString('vi-VN')}đ hôm nay.
           </Text>
         </View>
       )}
 
-      <View style={[styles.card, { borderColor: Colors.teal100 }]}>
-        <Text style={styles.goalLabel}>🎯 Mục tiêu tuần này</Text>
-        <Text style={styles.goalText}>
-          Trả đúng hạn tháng này. Chỉ cần 1 việc đó thôi.
-        </Text>
+      <View style={styles.todoCard}>
+        <Text style={styles.sectionTitle}>🎯 Hôm nay</Text>
+        <Text style={styles.todoItemDone}>☑ Check-in cảm xúc</Text>
+        <Text style={styles.todoItem}>☐ Xem lại khoản nợ</Text>
+        <Text style={styles.todoItem}>☐ Cập nhật thanh toán</Text>
+      </View>
+
+      <View style={styles.badgeCard}>
+        <Text style={styles.sectionTitle}>🏆 Thành tích</Text>
+        <Text style={styles.badgeItem}>🥉 Theo dõi đều đặn</Text>
+        <Text style={styles.badgeItem}>🥈 10 lần check-in</Text>
+      </View>
+
+      <View style={styles.quickActions}>
+        <Text style={styles.sectionTitle}>⚡ Hành động nhanh</Text>
+        <View style={styles.actionRow}>
+          <TouchableOpacity
+            style={styles.actionBtn}
+            onPress={() => navigation.navigate('DebtDetail')}
+          >
+            <Text style={styles.actionBtnText}>💳 Chi tiết nợ</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionBtn}
+            onPress={() => navigation.navigate('CheckIn')}
+          >
+            <Text style={styles.actionBtnText}>🎤 Check-in</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionBtn}
+            onPress={() => navigation.navigate('Profile')}
+          >
+            <Text style={styles.actionBtnText}>👤 Hồ sơ</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </ScrollView>
   );
 }
 
 function OstrichDashboard({ user, debtSummary, navigation }) {
-  const streak = 5;
+  const streak = 7;
   const rank = 34;
-  const challengeWidth = (streak / 5) * 100 + '%';
 
   return (
     <ScrollView contentContainerStyle={styles.scroll}>
@@ -320,10 +399,12 @@ function OstrichDashboard({ user, debtSummary, navigation }) {
         </View>
       </View>
 
-      <View style={[styles.card, { backgroundColor: '#FFF8EC', borderColor: Colors.goldLight }]}>
-        <Text style={styles.streakNumber}>🔥 {streak}</Text>
-        <Text style={styles.streakLabel}>ngày check-in liên tiếp</Text>
-        <Text style={styles.streakSub}>Thêm 2 ngày nữa → mở badge "Khởi Đầu Tốt"</Text>
+      <View style={styles.streakCard}>
+        <Text style={styles.streakEmoji}>🔥</Text>
+        <View>
+          <Text style={styles.streakTitle}>{streak} ngày liên tiếp</Text>
+          <Text style={styles.streakSubText}>Bạn đang duy trì thói quen rất tốt</Text>
+        </View>
       </View>
 
       <View style={styles.card}>
@@ -332,21 +413,59 @@ function OstrichDashboard({ user, debtSummary, navigation }) {
         <Text style={styles.rankSub}>người dùng cùng mức nợ đang quản lý tốt hơn</Text>
       </View>
 
-      <TouchableOpacity
-        style={[styles.card, { borderColor: Colors.teal100 }]}
-        onPress={() => navigation.navigate('DebtDetail')}
-      >
-        <Text style={styles.goalLabel}>⚡ Challenge tuần này</Text>
-        <Text style={styles.goalText}>Check-in 5 ngày liên tiếp để mở badge mới</Text>
-        <View style={styles.challengeBarContainer}>
-          <AnimatedProgressBar 
-            progress={(streak / 5) * 100} 
-            color={Colors.gold}
-            style={styles.challengeBar} 
-          />
+      {debtSummary && (
+        <View style={styles.card}>
+          <Text style={styles.goalLabel}>🌱 Debt Reframe</Text>
+          <Text
+            style={{
+              fontFamily: 'BeVietnamPro-Bold',
+              fontSize: 20,
+              color: Colors.ink,
+              lineHeight: 30,
+            }}
+          >
+            Chỉ khoảng{'\n'}
+            {debtSummary.totalMonthly.toLocaleString('vi-VN')}đ/tháng
+          </Text>
         </View>
-        <Text style={styles.challengeSub}>{streak}/5 ngày</Text>
-      </TouchableOpacity>
+      )}
+
+      <View style={styles.todoCard}>
+        <Text style={styles.sectionTitle}>🎯 Hôm nay</Text>
+        <Text style={styles.todoItemDone}>☑ Check-in cảm xúc</Text>
+        <Text style={styles.todoItem}>☐ Xem lại khoản nợ</Text>
+        <Text style={styles.todoItem}>☐ Cập nhật thanh toán</Text>
+      </View>
+
+      <View style={styles.badgeCard}>
+        <Text style={styles.sectionTitle}>🏆 Thành tích</Text>
+        <Text style={styles.badgeItem}>🥉 Theo dõi đều đặn</Text>
+        <Text style={styles.badgeItem}>🥈 10 lần check-in</Text>
+      </View>
+
+      <View style={styles.quickActions}>
+        <Text style={styles.sectionTitle}>⚡ Hành động nhanh</Text>
+        <View style={styles.actionRow}>
+          <TouchableOpacity
+            style={styles.actionBtn}
+            onPress={() => navigation.navigate('DebtDetail')}
+          >
+            <Text style={styles.actionBtnText}>💳 Chi tiết nợ</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionBtn}
+            onPress={() => navigation.navigate('CheckIn')}
+          >
+            <Text style={styles.actionBtnText}>🎤 Check-in</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionBtn}
+            onPress={() => navigation.navigate('Profile')}
+          >
+            <Text style={styles.actionBtnText}>👤 Hồ sơ</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </ScrollView>
   );
 }
@@ -481,5 +600,100 @@ const styles = StyleSheet.create({
   },
   profileBtnText: {
     fontFamily: 'BeVietnamPro-Bold', fontSize: 15, color: '#fff',
+  },
+
+  streakCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.teal50,
+    borderRadius: Radius.lg,
+    padding: Spacing.md,
+    marginBottom: Spacing.sm,
+    borderWidth: 1,
+    borderColor: Colors.teal100,
+  },
+  streakEmoji: {
+    fontSize: 32,
+    marginRight: 12,
+  },
+  streakTitle: {
+    fontFamily: 'BeVietnamPro-Bold',
+    fontSize: 16,
+    color: Colors.teal700,
+  },
+  streakSubText: {
+    fontFamily: 'BeVietnamPro-Regular',
+    fontSize: 13,
+    color: Colors.inkMid,
+  },
+
+  sectionTitle: {
+    fontFamily: 'BeVietnamPro-Bold',
+    fontSize: 15,
+    color: Colors.ink,
+    marginBottom: Spacing.sm,
+  },
+
+  todoCard: {
+    backgroundColor: Colors.surface,
+    borderRadius: Radius.lg,
+    padding: Spacing.lg,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    ...Shadow.card,
+  },
+  todoItem: {
+    fontFamily: 'BeVietnamPro-Regular',
+    fontSize: 15,
+    color: Colors.ink,
+    marginTop: 10,
+  },
+  todoItemDone: {
+    fontFamily: 'BeVietnamPro-Regular',
+    fontSize: 15,
+    color: Colors.teal700,
+    marginTop: 10,
+  },
+
+  badgeCard: {
+    backgroundColor: Colors.surface,
+    borderRadius: Radius.lg,
+    padding: Spacing.lg,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    ...Shadow.card,
+  },
+  badgeItem: {
+    fontFamily: 'BeVietnamPro-Regular',
+    fontSize: 15,
+    color: Colors.ink,
+    marginTop: 10,
+  },
+
+  quickActions: {
+    backgroundColor: Colors.surface,
+    borderRadius: Radius.lg,
+    padding: Spacing.lg,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    ...Shadow.card,
+  },
+  actionRow: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+  },
+  actionBtn: {
+    flex: 1,
+    backgroundColor: Colors.teal50,
+    borderRadius: Radius.md,
+    paddingVertical: 14,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Colors.teal100,
+  },
+  actionBtnText: {
+    fontFamily: 'BeVietnamPro-SemiBold',
+    fontSize: 13,
+    color: Colors.teal700,
   },
 });

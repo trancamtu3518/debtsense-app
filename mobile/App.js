@@ -11,6 +11,7 @@ import DebtInputScreen from './src/screens/DebtInputScreen';
 import DashboardScreen from './src/screens/DashboardScreen';
 import DebtDetailScreen from './src/screens/DebtDetailScreen';
 import CheckInScreen from './src/screens/CheckInScreen';
+import MainTabs from './src/navigation/MainTabs';
 
 const Stack = createStackNavigator();
 
@@ -58,6 +59,12 @@ export default function App() {
         <Stack.Screen
           name="Dashboard"
           component={DashboardScreen}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="MainTabs"
+          component={MainTabs}
           options={{ headerShown: false }}
         />
 

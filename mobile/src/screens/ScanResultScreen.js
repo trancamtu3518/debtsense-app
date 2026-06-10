@@ -118,7 +118,7 @@ export default function ScanResultScreen({ route, navigation }) {
           <Text style={styles.btnText}>Nhập Thông Tin Nợ →</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('Dashboard')}>
+        <TouchableOpacity onPress={() => navigation.replace('MainTabs')}>
           <Text style={styles.skipText}>Bỏ qua, xem Dashboard trước</Text>
         </TouchableOpacity>
       </Animated.View>

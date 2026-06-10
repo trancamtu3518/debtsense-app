@@ -178,7 +178,7 @@ export default function DebtInputScreen({ navigation }) {
 
   const handleSubmit = async () => {
     await AsyncStorage.setItem('debtData', JSON.stringify({ debts, savedAt: new Date().toISOString() }));
-    navigation.navigate('Dashboard');
+    navigation.replace('MainTabs');
   };
 
   return (

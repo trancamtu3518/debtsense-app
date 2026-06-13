@@ -1,8 +1,12 @@
 import axios from 'axios';
+import { Platform } from 'react-native';
 
-const API_BASE_URL = 'http://10.0.2.2:3000/api'; // Android emulator
-// const API_BASE_URL = 'http://localhost:3000/api'; // Web/iOS simulator
-// const API_BASE_URL = 'http://your-local-ip:3000/api'; // Thay bằng IP máy bạn cho thiết bị thật
+const API_BASE_URL = Platform.select({
+  web: 'http://localhost:3000/api',
+  android: 'http://192.168.1.161:3000/api',
+  default: 'http://192.168.1.161:3000/api',
+});
+
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,

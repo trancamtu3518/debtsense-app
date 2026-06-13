@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
-  Animated, StyleSheet, KeyboardAvoidingView,
+  Animated, Easing, StyleSheet, KeyboardAvoidingView,
   Platform, ScrollView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -14,13 +14,13 @@ function FloatingInput({ label, value, onChangeText, keyboardType = 'default', m
 
   const handleFocus = () => {
     isFocused.current = true;
-    Animated.timing(floatAnim, { toValue: 1, duration: 200, useNativeDriver: false }).start();
+    Animated.timing(floatAnim, { toValue: 1, duration: 200, useNativeDriver: false, easing: Easing.inOut(Easing.ease) }).start();
   };
 
   const handleBlur = () => {
     isFocused.current = false;
     if (!value) {
-      Animated.timing(floatAnim, { toValue: 0, duration: 200, useNativeDriver: false }).start();
+      Animated.timing(floatAnim, { toValue: 0, duration: 200, useNativeDriver: false, easing: Easing.inOut(Easing.ease) }).start();
     }
   };
 

@@ -40,7 +40,7 @@ function CustomTopTabBar({ state, descriptors, navigation }) {
             });
 
             if (!isFocused && !event.defaultPrevented) {
-              navigation.navigate({ name: route.name, merge: true });
+              navigation.navigate(route.name);
             }
           };
 

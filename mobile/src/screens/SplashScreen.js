@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Animated, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import { View, Text, Animated, Easing, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { Colors, Spacing, Radius, Shadow } from '../constants/theme';
 
 const { width, height } = Dimensions.get('window');
@@ -10,8 +10,8 @@ export default function SplashScreen({ navigation }) {
 
   useEffect(() => {
     Animated.parallel([
-      Animated.timing(fadeAnim, { toValue: 1, duration: 700, useNativeDriver: true }),
-      Animated.timing(slideAnim, { toValue: 0, duration: 700, useNativeDriver: true }),
+      Animated.timing(fadeAnim, { toValue: 1, duration: 700, useNativeDriver: true, easing: Easing.inOut(Easing.ease) }),
+      Animated.timing(slideAnim, { toValue: 0, duration: 700, useNativeDriver: true, easing: Easing.inOut(Easing.ease) }),
     ]).start();
   }, []);
 

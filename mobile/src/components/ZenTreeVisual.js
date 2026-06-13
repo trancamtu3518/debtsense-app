@@ -31,31 +31,31 @@ function Particle({ delay, treeLevel, containerSize }) {
           Animated.timing(opacity, {
             toValue: 0.8,
             duration: duration * 0.3,
-            useNativeDriver: true,
+            useNativeDriver: true, easing: Easing.inOut(Easing.ease),
           }),
           Animated.timing(translateY, {
             toValue: -(60 + Math.random() * 60),
             duration: duration,
             easing: Easing.out(Easing.cubic),
-            useNativeDriver: true,
+            useNativeDriver: true, easing: Easing.inOut(Easing.ease),
           }),
           Animated.timing(translateX, {
             toValue: startX + driftX,
             duration: duration,
             easing: Easing.inOut(Easing.sine),
-            useNativeDriver: true,
+            useNativeDriver: true, easing: Easing.inOut(Easing.ease),
           }),
           Animated.timing(scale, {
             toValue: 1,
             duration: duration * 0.4,
-            useNativeDriver: true,
+            useNativeDriver: true, easing: Easing.inOut(Easing.ease),
           }),
           Animated.sequence([
             Animated.delay(duration * 0.6),
             Animated.timing(opacity, {
               toValue: 0,
               duration: duration * 0.4,
-              useNativeDriver: true,
+              useNativeDriver: true, easing: Easing.inOut(Easing.ease),
             }),
           ]),
         ]),
@@ -99,13 +99,13 @@ export default function ZenTreeVisual({ level, xp, nextAt }) {
           toValue: 1.06,
           duration: 2000,
           easing: Easing.inOut(Easing.sine),
-          useNativeDriver: true,
+          useNativeDriver: true, easing: Easing.inOut(Easing.ease),
         }),
         Animated.timing(pulseAnim, {
           toValue: 1,
           duration: 2000,
           easing: Easing.inOut(Easing.sine),
-          useNativeDriver: true,
+          useNativeDriver: true, easing: Easing.inOut(Easing.ease),
         }),
       ])
     ).start();
@@ -120,13 +120,13 @@ export default function ZenTreeVisual({ level, xp, nextAt }) {
             toValue: 0.6,
             duration: 1500,
             easing: Easing.inOut(Easing.sine),
-            useNativeDriver: true,
+            useNativeDriver: true, easing: Easing.inOut(Easing.ease),
           }),
           Animated.timing(glowAnim, {
             toValue: 0.2,
             duration: 1500,
             easing: Easing.inOut(Easing.sine),
-            useNativeDriver: true,
+            useNativeDriver: true, easing: Easing.inOut(Easing.ease),
           }),
         ])
       ).start();
@@ -139,7 +139,7 @@ export default function ZenTreeVisual({ level, xp, nextAt }) {
       toValue: 1,
       friction: 3,
       tension: 80,
-      useNativeDriver: true,
+      useNativeDriver: true, easing: Easing.inOut(Easing.ease),
     }).start();
   }, []);
 

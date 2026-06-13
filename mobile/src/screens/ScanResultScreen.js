@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, Animated, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Animated, Easing, TouchableOpacity, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors, Spacing, Radius, Shadow } from '../constants/theme';
 
@@ -115,8 +115,8 @@ export default function ScanResultScreen({ route, navigation }) {
       }));
       setIsLoading(false);
       Animated.parallel([
-        Animated.timing(slideAnim, { toValue: 0, duration: 500, useNativeDriver: true }),
-        Animated.timing(fadeAnim, { toValue: 1, duration: 500, useNativeDriver: true }),
+        Animated.timing(slideAnim, { toValue: 0, duration: 500, useNativeDriver: true, easing: Easing.inOut(Easing.ease) }),
+        Animated.timing(fadeAnim, { toValue: 1, duration: 500, useNativeDriver: true, easing: Easing.inOut(Easing.ease) }),
       ]).start();
     }, 1500);
 

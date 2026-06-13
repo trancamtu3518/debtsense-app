@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Animated,
+  Easing,
   ScrollView
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
@@ -107,8 +108,8 @@ function TypingIndicator() {
       return Animated.loop(
         Animated.sequence([
           Animated.delay(delay),
-          Animated.timing(dot, { toValue: -6, duration: 300, useNativeDriver: true }),
-          Animated.timing(dot, { toValue: 0, duration: 300, useNativeDriver: true }),
+          Animated.timing(dot, { toValue: -6, duration: 300, useNativeDriver: true, easing: Easing.inOut(Easing.ease) }),
+          Animated.timing(dot, { toValue: 0, duration: 300, useNativeDriver: true, easing: Easing.inOut(Easing.ease) }),
           Animated.delay(300)
         ])
       );

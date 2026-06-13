@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, StyleSheet, Animated } from 'react-native';
+import { View, StyleSheet, Animated, Easing } from 'react-native';
 import { Colors, Radius } from '../constants/theme';
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -10,8 +10,9 @@ const AnimatedProgressBar = ({ progress, style, color }) => {
   useEffect(() => {
     Animated.timing(animValue, {
       toValue: progress,
-      duration: 800,
+      duration: 1000,
       useNativeDriver: false,
+      easing: Easing.inOut(Easing.ease),
     }).start();
   }, [progress]);
 

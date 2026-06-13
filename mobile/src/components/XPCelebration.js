@@ -33,31 +33,31 @@ function ConfettiPiece({ delay, containerWidth }) {
         Animated.timing(scale, {
           toValue: 1,
           duration: 200,
-          useNativeDriver: true,
+          useNativeDriver: true, easing: Easing.inOut(Easing.ease),
         }),
         Animated.timing(translateY, {
           toValue: 200 + Math.random() * 100,
           duration,
           easing: Easing.out(Easing.quad),
-          useNativeDriver: true,
+          useNativeDriver: true, easing: Easing.inOut(Easing.ease),
         }),
         Animated.timing(translateX, {
           toValue: startX + drift,
           duration,
           easing: Easing.inOut(Easing.sine),
-          useNativeDriver: true,
+          useNativeDriver: true, easing: Easing.inOut(Easing.ease),
         }),
         Animated.timing(rotate, {
           toValue: 2 + Math.random() * 4,
           duration,
-          useNativeDriver: true,
+          useNativeDriver: true, easing: Easing.inOut(Easing.ease),
         }),
         Animated.sequence([
           Animated.delay(duration * 0.6),
           Animated.timing(opacity, {
             toValue: 0,
             duration: duration * 0.4,
-            useNativeDriver: true,
+            useNativeDriver: true, easing: Easing.inOut(Easing.ease),
           }),
         ]),
       ]),
@@ -107,19 +107,19 @@ export default function XPCelebration({ show, xpGained, containerWidth = 300 }) 
             toValue: 1,
             friction: 4,
             tension: 100,
-            useNativeDriver: true,
+            useNativeDriver: true, easing: Easing.inOut(Easing.ease),
           }),
           Animated.timing(textOpacity, {
             toValue: 1,
             duration: 300,
-            useNativeDriver: true,
+            useNativeDriver: true, easing: Easing.inOut(Easing.ease),
           }),
         ]),
         Animated.delay(1500),
         Animated.timing(textOpacity, {
           toValue: 0,
           duration: 500,
-          useNativeDriver: true,
+          useNativeDriver: true, easing: Easing.inOut(Easing.ease),
         }),
       ]).start();
     }
